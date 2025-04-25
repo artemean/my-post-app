@@ -1,20 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { PostModel } from "./PostModel";
 import { PostCard } from "./PostCard";
-
-const getPosts = async (): Promise<PostModel[]> => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts");
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
-};
+import { postsQueryOptions } from "./postService";
+import { Link } from "@tanstack/react-router";
 
 export function PostList() {
-  const { data, error, isLoading } = useQuery<PostModel[]>({
-    queryKey: ["posts"],
-    queryFn: getPosts,
-  });
+  const { data, error, isLoading } = useQuery(postsQueryOptions);
 
   return (
     <div>
@@ -24,7 +14,17 @@ export function PostList() {
       {data && (
         <>
           {data.map((post) => (
-            <PostCard key={post.id} post={post} />
+            <>
+              <Link
+                key={post.id}
+                to="/posts/$postId"
+                params={{
+                  postId: `${post.id}`,
+                }}
+              >
+                <PostCard post={post} />
+              </Link>
+            </>
           ))}
         </>
       )}
